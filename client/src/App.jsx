@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import MovieCard from "./components/MovieCard";
+import { MoviesContext } from "./context/moviesContext";
 import "./styles/app.scss";
 
 // const data = {
@@ -27,8 +28,13 @@ import "./styles/app.scss";
 // http://localhost:5000/movies
 
 function App() {
-  const [movies, setMovies] = useState(null);
-  const [labels, setLabels] = useState(null);
+  // const [movies, setMovies] = useState(null);
+  // const [labels, setLabels] = useState(null);
+
+  const { data, dispatch } = useContext(MoviesContext);
+  const { movies, labels, filterLabel } = data;
+
+  console.log("data", data);
 
   useEffect(() => {
     fetch("http://localhost:5000/movies", {
@@ -38,7 +44,7 @@ function App() {
       },
     })
       .then(async (res) => {
-        setMovies(await res.json());
+        dispatch({ type: "SET_MOVIES", payload: (await res.json()).movies });
         // console.log(await res.json());
       })
       .catch((error) => {
@@ -52,8 +58,8 @@ function App() {
       },
     })
       .then(async (res) => {
-        setLabels(await res.json());
-        console.log(labels);
+        dispatch({ type: "SET_LABELS", payload: (await res.json()).labels });
+        // console.log(labels);
       })
       .catch((error) => {
         console.log(error);
@@ -66,14 +72,19 @@ function App() {
         <h1 className="Brand">Movie Screener</h1>
         <div className="filter-menu">
           <ul>
-            {labels && labels.labels.map((label) => <li key={label} className="item">{label}</li>)}
+            {labels.length !== 0 &&
+              labels.map((label) => (
+                <li key={label} className="item">
+                  {label}
+                </li>
+              ))}
           </ul>
         </div>
       </div>
 
       <div className="container">
-        {movies &&
-          movies.movies.map((element) => (
+        {Object.keys(movies).length !== 0 &&
+          movies.map((element) => (
             <MovieCard key={element.title} data={element} />
           ))}
       </div>
