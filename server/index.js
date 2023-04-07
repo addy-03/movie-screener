@@ -13,7 +13,7 @@ const server = http.createServer(async (req, res) => {
     res.write("This is Movie Screener API");
     res.end();
   }
-  // Get all the movies
+  // GET all the movies
   else if (req.url === "/movies" && req.method === "GET") {
     fs.readFile(moviesDataFile, "utf-8", (error, data) => {
       if (error) {
@@ -27,7 +27,7 @@ const server = http.createServer(async (req, res) => {
       }
     });
   }
-  // Auxiliary Data
+  // GET Labels
   else if (req.url === "/movies/labels" && req.method === "GET") {
     fs.readFile(moviesDataFile, "utf-8", (error, data) => {
       if (error) {
@@ -45,6 +45,37 @@ const server = http.createServer(async (req, res) => {
 
         labels = [...labels];
         res.end(JSON.stringify(labels));
+      }
+    });
+  }
+  // Update shortlist status of movie
+  else if (
+    req.url.match(/^\/movies\/shortlist\/[\w(%20)+]+$/) &&
+    req.method === "PATCH"
+  ) {
+    fs.readFile(moviesDataFile, "utf-8", (error, data) => {
+      if (error) {
+        res.writeHead(404, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ message: error.message }));
+      } else {
+        res.writeHead(200, reqHeadSuccess);
+        res.end("reuest " + req.url);
+        console.log(req.url);
+      }
+    });
+  }
+  // GET Movies on Label filter
+  else if (
+    req.url.match(/\/movies\?filter=[\w(%20)+]+$/) &&
+    req.method === "GET"
+  ) {
+    fs.readFile(moviesDataFile, "utf-8", (error, data) => {
+      if (error) {
+        res.writeHead(404, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ message: error.message }));
+      } else {
+        res.writeHead(200, reqHeadSuccess);
+        res.end("Labels");
       }
     });
   }
