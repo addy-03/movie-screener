@@ -28,6 +28,7 @@ import "./styles/app.scss";
 
 function App() {
   const [movies, setMovies] = useState(null);
+  const [labels, setLabels] = useState(null);
 
   useEffect(() => {
     fetch("http://localhost:5000/movies", {
@@ -43,13 +44,31 @@ function App() {
       .catch((error) => {
         console.log(error);
       });
+
+    fetch("http://localhost:5000/movies/labels", {
+      method: "GET",
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+      },
+    })
+      .then(async (res) => {
+        setLabels(await res.json());
+        console.log(labels);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }, []);
 
   return (
     <div className="app">
       <div className="header">
         <h1 className="Brand">Movie Screener</h1>
-        <div className="filter-menu"></div>
+        <div className="filter-menu">
+          <ul>
+            {labels && labels.labels.map((label) => <li key={label} className="item">{label}</li>)}
+          </ul>
+        </div>
       </div>
 
       <div className="container">
