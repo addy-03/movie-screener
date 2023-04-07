@@ -15,10 +15,37 @@ const server = http.createServer(async (req, res) => {
   }
   // Get all the movies
   else if (req.url === "/movies" && req.method === "GET") {
-    res.writeHead(200, reqHeadSuccess);
-    fs.readFile(moviesDataFile, "utf-8", (err, data) => {
-      console.log(data);
-      res.end(data);
+    fs.readFile(moviesDataFile, "utf-8", (error, data) => {
+      if (error) {
+        // set the status code and content-type
+        res.writeHead(404, { "Content-Type": "application/json" });
+        // send the error
+        res.end(JSON.stringify({ message: error.message }));
+      } else {
+        res.writeHead(200, reqHeadSuccess);
+        res.end(data);
+      }
+    });
+  }
+  // Auxiliary Data
+  else if (req.url === "/movies/labels" && req.method === "GET") {
+    fs.readFile(moviesDataFile, "utf-8", (error, data) => {
+      if (error) {
+        res.writeHead(404, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ message: error.message }));
+      } else {
+        res.writeHead(200, reqHeadSuccess);
+
+        data = JSON.parse(data);
+        let labels = new Set();
+
+        data.movies.forEach((element) => {
+          labels.add(element.label);
+        });
+
+        labels = [...labels];
+        res.end(JSON.stringify(labels));
+      }
     });
   }
   // If no route present
