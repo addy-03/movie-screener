@@ -1,3 +1,75 @@
-.movie-card{
-    background-color: black;
+.movie-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-content: center;
+  justify-content: flex-start;
+  background-color: cornflowerblue;
+  width: 350px;
+  height: 550px;
+  padding: 20px 20px 5px 20px;
+//   gap: 5px;
+
+  .toggle-btn {
+    position: absolute;
+    width: 35px;
+    height: 35px;
+    object-fit: contain;
+    transition: all 0.4s ease;
+    cursor: pointer;
+    &:hover{
+        scale: 1.2;
+    }
+  }
+
+  .visible {
+    top: 13px;
+    left: 20px;
+    background-color: white;
+    border-radius: 50%;
+  }
+  .shortlist {
+    top: 13px;
+    right: 20px;
+  }
+
+  .image-wrapper {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+
+    .label {
+      background-color: rgba($color: #000000, $alpha: 0.6);
+      padding: 5px;
+      text-align: center;
+    }
+    .image {
+      width: 275px;
+      height: 320px;
+      object-fit: cover;
+      object-position: center;
+    }
+  }
+
+  .title {
+    text-align: left;
+    width: 100%;
+    font-weight: 800;
+    font-size: 20px;
+  }
+
+  .description {
+    width: 310px;
+    height: 130px;
+    display: flex;
+    flex-wrap: wrap;
+    text-align: justify;
+    overflow: hidden;
+    align-content: center;
+  }
+
+  .rating {
+    height: 30px;
+  }
 }
