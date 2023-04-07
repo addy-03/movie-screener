@@ -1,10 +1,10 @@
 const http = require("http");
 const fs = require("fs");
+const Movies = require("./controller/moviesController");
 
 const PORT = process.env.PORT || 5000;
 
 const reqHeadSuccess = { "Content-Type": "application/json" };
-const moviesDataFile = "./Data/movies.json";
 
 const server = http.createServer(async (req, res) => {
   // Set the request route
@@ -15,38 +15,15 @@ const server = http.createServer(async (req, res) => {
   }
   // GET all the movies
   else if (req.url === "/movies" && req.method === "GET") {
-    fs.readFile(moviesDataFile, "utf-8", (error, data) => {
-      if (error) {
-        // set the status code and content-type
-        res.writeHead(404, { "Content-Type": "application/json" });
-        // send the error
-        res.end(JSON.stringify({ message: error.message }));
-      } else {
-        res.writeHead(200, reqHeadSuccess);
-        res.end(data);
-      }
-    });
+    const movies = await new Movies().getAllMovies();
+    res.writeHead(200, reqHeadSuccess);
+    res.end(JSON.stringify(movies));
   }
   // GET Labels
   else if (req.url === "/movies/labels" && req.method === "GET") {
-    fs.readFile(moviesDataFile, "utf-8", (error, data) => {
-      if (error) {
-        res.writeHead(404, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ message: error.message }));
-      } else {
-        res.writeHead(200, reqHeadSuccess);
-
-        data = JSON.parse(data);
-        let labels = new Set();
-
-        data.movies.forEach((element) => {
-          labels.add(element.label);
-        });
-
-        labels = [...labels];
-        res.end(JSON.stringify(labels));
-      }
-    });
+    const labels = await new Movies().getMovieLabels();
+    res.writeHead(200, reqHeadSuccess);
+    res.end(JSON.stringify(labels));
   }
   // Update shortlist status of movie
   else if (
@@ -69,15 +46,11 @@ const server = http.createServer(async (req, res) => {
     req.url.match(/\/movies\?filter=[\w(%20)+]+$/) &&
     req.method === "GET"
   ) {
-    fs.readFile(moviesDataFile, "utf-8", (error, data) => {
-      if (error) {
-        res.writeHead(404, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ message: error.message }));
-      } else {
-        res.writeHead(200, reqHeadSuccess);
-        res.end("Labels");
-      }
-    });
+    const label = req.url.split("=")[1].replace("%20", " ");
+    console.log(label);
+    const filteredData = await new Movies().getMoviesByLabel(label);
+    res.writeHead(200, reqHeadSuccess);
+    res.end(JSON.stringify(filteredData));
   }
   // If no route present
   else {
