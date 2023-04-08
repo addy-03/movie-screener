@@ -28,9 +28,6 @@ import "./styles/app.scss";
 // http://localhost:5000/movies
 
 function App() {
-  // const [movies, setMovies] = useState(null);
-  // const [labels, setLabels] = useState(null);
-
   const { data, dispatch } = useContext(MoviesContext);
   const { movies, labels, filterLabel } = data;
 
@@ -72,8 +69,8 @@ function App() {
         <h1 className="Brand">Movie Screener</h1>
         <div className="filter-menu">
           <ul>
-            {labels.length !== 0 &&
-              labels.map((label) => (
+            {labels?.length !== 0 &&
+              labels?.map((label) => (
                 <li key={label} className="item">
                   {label}
                 </li>

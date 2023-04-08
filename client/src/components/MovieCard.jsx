@@ -2,8 +2,32 @@ import visibleIcon from "../assets/icons/visible-icon.svg";
 import invisibleIcon from "../assets/icons/invisible-icon.svg";
 import shortlistIcon from "../assets/icons/red-heart-icon.png";
 import notShortlistIcon from "../assets/icons/heart-outline-icon.png";
+import { useContext } from "react";
+import { MoviesContext } from "../context/moviesContext";
 
 const MovieCard = ({ data }) => {
+  console.log("props before", data);
+  const { dispatch } = useContext(MoviesContext);
+  const handleShortlist = () => {
+    fetch("http://localhost:5000/movies/shortlist/" + data.title, {
+      method: "PATCH",
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+      },
+    })
+      .then(async (res) => {
+        // console.log("shortlisted API", await res.json());
+        const movie = (await res.json()).movie;
+        dispatch({ type: "UPDATE_MOVIE", payload: movie });
+        console.log(movie);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  console.log("props after", data);
+
   return (
     <div className="movie-card">
       <img
@@ -12,7 +36,8 @@ const MovieCard = ({ data }) => {
       />
       <img
         className={`toggle-btn shortlist shortlist-${data.isShortlisted}`}
-        src={data.isVisible ? shortlistIcon : notShortlistIcon}
+        src={data.isShortlisted ? shortlistIcon : notShortlistIcon}
+        onClick={handleShortlist}
       />
       <div className="image-wrapper">
         <div className="label">{data.label}</div>
