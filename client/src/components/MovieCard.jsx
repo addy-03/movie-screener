@@ -6,7 +6,6 @@ import { useContext } from "react";
 import { MoviesContext } from "../context/moviesContext";
 
 const MovieCard = ({ data }) => {
-  console.log("props before", data);
   const { dispatch } = useContext(MoviesContext);
   const handleShortlist = () => {
     fetch("http://localhost:5000/movies/shortlist/" + data.title, {
@@ -26,13 +25,30 @@ const MovieCard = ({ data }) => {
       });
   };
 
-  console.log("props after", data);
+  const handleVisible = () => {
+    fetch("http://localhost:5000/movies/visible/" + data.title, {
+      method: "PATCH",
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+      },
+    })
+      .then(async (res) => {
+        // console.log("shortlisted API", await res.json());
+        const movie = (await res.json()).movie;
+        dispatch({ type: "UPDATE_MOVIE", payload: movie });
+        console.log(movie);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   return (
     <div className="movie-card">
       <img
         className={`toggle-btn visible visible-${data.isVisible}`}
         src={data.isVisible ? visibleIcon : invisibleIcon}
+        onClick={handleVisible}
       />
       <img
         className={`toggle-btn shortlist shortlist-${data.isShortlisted}`}
@@ -41,7 +57,7 @@ const MovieCard = ({ data }) => {
       />
       <div className="image-wrapper">
         <div className="label">{data.label}</div>
-        <img className="image" src={data.img} alt={data.title} />
+        <img className="image" src={data.img} />
       </div>
       <div className="title">{data.title}</div>
       <div className="description">{data.desc}</div>
