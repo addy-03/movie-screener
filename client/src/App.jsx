@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import MovieCard from "./components/MovieCard";
 import { MoviesContext } from "./context/moviesContext";
 import "./styles/app.scss";
+import Header from "./components/Header";
 
 // const data = {
 //   title: "THOR",
@@ -48,36 +49,24 @@ function App() {
         console.log(error);
       });
 
-    fetch("http://localhost:5000/movies/labels", {
-      method: "GET",
-      headers: {
-        "Content-type": "application/json; charset=UTF-8",
-      },
-    })
-      .then(async (res) => {
-        dispatch({ type: "SET_LABELS", payload: (await res.json()).labels });
-        // console.log(labels);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    // fetch("http://localhost:5000/movies/labels", {
+    //   method: "GET",
+    //   headers: {
+    //     "Content-type": "application/json; charset=UTF-8",
+    //   },
+    // })
+    //   .then(async (res) => {
+    //     dispatch({ type: "SET_LABELS", payload: (await res.json()).labels });
+    //     // console.log(labels);
+    //   })
+    //   .catch((error) => {
+    //     console.log(error);
+    //   });
   }, []);
 
   return (
     <div className="app">
-      <div className="header">
-        <h1 className="Brand">Movie Screener</h1>
-        <div className="filter-menu">
-          <ul>
-            {labels?.length !== 0 &&
-              labels?.map((label) => (
-                <li key={label} className="item">
-                  {label}
-                </li>
-              ))}
-          </ul>
-        </div>
-      </div>
+      <Header />
 
       <div className="container">
         {Object.keys(movies).length !== 0 &&
