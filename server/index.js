@@ -2,6 +2,8 @@ const http = require("http");
 const fs = require("fs");
 const Movies = require("./controller/moviesController");
 
+const moviesDataFile = "./data/moviesData.json";
+
 const PORT = process.env.PORT || 5000;
 
 const reqHeadSuccess = { "Content-Type": "application/json" };
@@ -10,7 +12,7 @@ const server = http.createServer(async (req, res) => {
   // Set CORS headers
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Request-Method", "*");
-  res.setHeader("Access-Control-Allow-Methods", ["GET", "POST", "OPTIONS"]);
+  res.setHeader("Access-Control-Allow-Methods", ["GET", "PATCH", "OPTIONS"]);
   res.setHeader("Access-Control-Allow-Headers", "*");
 
   // Set the request route
@@ -19,7 +21,9 @@ const server = http.createServer(async (req, res) => {
     res.writeHead(200, reqHeadSuccess);
     res.write("This is Movie Screener API");
     res.end();
-  } else if (req.method === "OPTIONS") {
+  }
+  //Send success on Options preflight
+  else if (req.method === "OPTIONS") {
     res.writeHead(200);
     res.end();
     return;
@@ -44,16 +48,21 @@ const server = http.createServer(async (req, res) => {
     req.method === "PATCH"
   ) {
     console.log(req.url);
-    fs.readFile(moviesDataFile, "utf-8", (error, data) => {
-      if (error) {
-        res.writeHead(404, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ message: error.message }));
-      } else {
+    const id = req.url.split("/")[3].replace("%20", " ");
+    console.log("id", id);
+
+    new Movies()
+      .updateShortlistStatus(id)
+      .then((movie) => {
         res.writeHead(200, reqHeadSuccess);
-        res.end("reuest " + req.url);
-        console.log(req.url);
-      }
-    });
+        res.end(JSON.stringify({ movie }));
+        console.log("updated movie");
+      })
+      .catch((error) => {
+        console.log("catch updated movie");
+        res.writeHead(404, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ message: "Movie not found" }));
+      });
   }
   // GET Movies on Label filter
   else if (
