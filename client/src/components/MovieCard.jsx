@@ -2,7 +2,8 @@ import visibleIcon from "../assets/icons/visible-icon.svg";
 import invisibleIcon from "../assets/icons/invisible-icon.svg";
 import shortlistIcon from "../assets/icons/red-heart-icon.png";
 import notShortlistIcon from "../assets/icons/heart-outline-icon.png";
-import { useContext } from "react";
+import starIcon from "../assets/icons/star-icon.png";
+import { useContext, useEffect, useState } from "react";
 import { MoviesContext } from "../context/moviesContext";
 
 const MovieCard = ({ data }) => {
@@ -43,8 +44,41 @@ const MovieCard = ({ data }) => {
       });
   };
 
+  let score = data.rating[2].score.split("/")[0];
+  const ratingEl = [];
+
+  score = parseInt(score);
+  console.log("rating", score);
+  for (let index = 0; index < parseInt(score); index++) {
+    ratingEl.push(<img key={index} src={starIcon} alt="star" />);
+  }
+
+  // 1) Blue ( isVisible = True & isShortlist = True )
+  // 2) Orange ( isVisible = True & isShortlist = False )
+  // 3) Yellow ( isVisible = False & isShortlist = False )
+  // 4) Black ( isVisible = False & isShortlist = True )
+
+  const [bgColor, setBgColor] = useState("");
+
+  const changeBgColor = () => {
+    if (data.isVisible === true && data.isShortlisted === true) {
+      setBgColor("blue");
+    } else if (data.isVisible === true && data.isShortlisted === false) {
+      setBgColor("orange");
+    } else if (data.isVisible === false && data.isShortlisted === false) {
+      setBgColor("yellow");
+    } else if (data.isVisible === false && data.isShortlisted === true) {
+      setBgColor("black");
+    }
+  };
+
+  useEffect(() => {
+    console.log([data.isShortlisted, data.isVisible]);
+    changeBgColor();
+  }, [data, data.isShortlisted, data.isVisible]);
+
   return (
-    <div className="movie-card">
+    <div className={`movie-card bg-${bgColor}`}>
       <img
         className={`toggle-btn visible visible-${data.isVisible}`}
         src={data.isVisible ? visibleIcon : invisibleIcon}
@@ -61,7 +95,9 @@ const MovieCard = ({ data }) => {
       </div>
       <div className="title">{data.title}</div>
       <div className="description">{data.desc}</div>
-      <div className="rating">{data.rating[2].score}</div>
+      <div className="rating">
+        {ratingEl} {data.rating[2].score}
+      </div>
     </div>
   );
 };

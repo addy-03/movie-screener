@@ -79,6 +79,8 @@ const Header = () => {
 
   const clearFilters = () => {
     dispatch({ type: "SET_FILTER_LABEL", payload: "" });
+    const menuEl = document.getElementById("menu");
+    menuEl.style.display = "none";
   };
 
   return (
