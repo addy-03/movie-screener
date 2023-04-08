@@ -1,12 +1,18 @@
 @use "./movieCard.scss" as *;
 @use "./header.scss" as *;
 
-
 .app {
   width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
+
+  //   background: #636363;
+  //   background: -webkit-linear-gradient(to right, #a2ab58, #636363);
+  //   background: linear-gradient(to right, #a2ab58, #636363);
+  background: #0f2027;
+  background: -webkit-linear-gradient(to right, #2c5364, #203a43, #0f2027);
+  background: linear-gradient(to right, #2c5364, #203a43, #0f2027);
 }
 
 .container {
