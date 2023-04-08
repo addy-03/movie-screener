@@ -70,6 +70,37 @@ class MoviesController {
         });
     });
   }
+
+  async updateVisibleStatus(id) {
+    return new Promise((resolve, reject) => {
+      this.getMovieIndexById(id)
+        .then((index) => {
+          console.log("find", index);
+          const movie = movies[index];
+          console.log("initial MOvie", movies[index]);
+          const updatedMovie = {
+            ...movie,
+            isVisible: !movie.isVisible,
+          };
+          movies[index] = updatedMovie;
+          console.log("updated MOvie", movies[index]);
+
+          fs.writeFileSync(
+            moviesDataFile,
+            JSON.stringify({ movies }),
+            "utf-8",
+            (err) => {
+              if (err) console.log(err);
+            }
+          );
+          resolve(movies[index]);
+        })
+        .catch((err) => {
+          console.log("catch in updateShortlistStatus");
+          reject(`No movie with id ${id} found`);
+        });
+    });
+  }
 }
 
 module.exports = MoviesController;

@@ -64,6 +64,28 @@ const server = http.createServer(async (req, res) => {
         res.end(JSON.stringify({ message: "Movie not found" }));
       });
   }
+  // Update visible status of movie
+  else if (
+    req.url.match(/^\/movies\/visible\/[\w(%20)+]+$/) &&
+    req.method === "PATCH"
+  ) {
+    console.log(req.url);
+    const id = req.url.split("/")[3].replace("%20", " ");
+    console.log("id", id);
+
+    new Movies()
+      .updateVisibleStatus(id)
+      .then((movie) => {
+        res.writeHead(200, reqHeadSuccess);
+        res.end(JSON.stringify({ movie }));
+        console.log("updated movie");
+      })
+      .catch((error) => {
+        console.log("catch updated movie");
+        res.writeHead(404, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ message: "Movie not found" }));
+      });
+  }
   // GET Movies on Label filter
   else if (
     req.url.match(/\/movies\?filter=[\w(%20)+]+$/) &&
