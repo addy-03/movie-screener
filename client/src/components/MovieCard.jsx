@@ -3,11 +3,15 @@ import invisibleIcon from "../assets/icons/invisible-icon.svg";
 import shortlistIcon from "../assets/icons/red-heart-icon.png";
 import notShortlistIcon from "../assets/icons/heart-outline-icon.png";
 import starIcon from "../assets/icons/star-icon.png";
+import halfStarIcon from "../assets/icons/star-half-icon.png";
 import { useContext, useEffect, useState } from "react";
 import { MoviesContext } from "../context/moviesContext";
 
 const MovieCard = ({ data }) => {
   const { dispatch } = useContext(MoviesContext);
+  const [rating, setRating] = useState(0);
+  const [ratingEl, setRatingEl] = useState([]);
+
   const handleShortlist = () => {
     fetch("http://localhost:5000/movies/shortlist/" + data.title, {
       method: "PATCH",
@@ -44,14 +48,34 @@ const MovieCard = ({ data }) => {
       });
   };
 
-  let score = data.rating[2].score.split("/")[0];
-  const ratingEl = [];
+  const calculateRating = () => {
+    let score = [
+      parseFloat(data.rating[0].score.split("/")[0]),
+      parseFloat(data.rating[1].score.split("%")[0]),
+      parseFloat(data.rating[2].score.split("/")[0]),
+    ];
 
-  score = parseInt(score);
-  console.log("rating", score);
-  for (let index = 0; index < parseInt(score); index++) {
-    ratingEl.push(<img key={index} src={starIcon} alt="star" />);
-  }
+    let rating = (score[0] / 2 + (score[1] * 5) / 100 + score[2]) / 3;
+    setRating(rating.toFixed(1));
+    // console.log("rating", rating);
+
+    let i = 0;
+    setRatingEl([]);
+    for (let index = 0; index < parseInt(rating); index++) {
+      setRatingEl((state) => [
+        ...state,
+        <img key={index} src={starIcon} alt="star" />,
+      ]);
+      i = index;
+      // console.log(index, "ratingEl");
+    }
+    if (rating - parseInt(rating) > 0) {
+      setRatingEl((state) => [
+        ...state,
+        <img key={i + 1} src={halfStarIcon} alt="star" />,
+      ]);
+    }
+  };
 
   // 1) Blue ( isVisible = True & isShortlist = True )
   // 2) Orange ( isVisible = True & isShortlist = False )
@@ -73,9 +97,13 @@ const MovieCard = ({ data }) => {
   };
 
   useEffect(() => {
-    console.log([data.isShortlisted, data.isVisible]);
+    // console.log([data.isShortlisted, data.isVisible]);
     changeBgColor();
   }, [data, data.isShortlisted, data.isVisible]);
+
+  useEffect(() => {
+    calculateRating();
+  }, [data, data.rating]);
 
   return (
     <div className={`movie-card bg-${bgColor}`}>
@@ -96,7 +124,8 @@ const MovieCard = ({ data }) => {
       <div className="title">{data.title}</div>
       <div className="description">{data.desc}</div>
       <div className="rating">
-        {ratingEl} {data.rating[2].score}
+        {ratingEl}
+        {rating}/5
       </div>
     </div>
   );
